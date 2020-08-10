@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Timer Ala ala</title>
+        <style>
+            div{
+                text-align: center;
+            }
+            h1,p{
+                display: inline;
+            }
+            input{
+                width: 4%  ;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="timer">
+            <h1>Format Hour:Minute:Second</h1></br>
+            <input id="hour" type="number" value="0">:
+            <input id="minute" type="number" value="0">:
+            <input id="second" type="number" value="0">
+
+        </div>
+        <div id="runOrSet">
+            <br>
+            <button onclick="funRunTimer()">Jalankan Timer</button>
+        </div>
+        
+        <!-- Script JS -->
+        <script> 
+            const funRunTimer=()=>{
+                console.log("mulai")
+                secondRemaining=parseInt(document.getElementById("second").value) || 0
+                minuteRemaining=parseInt(document.getElementById("minute").value) || 0
+                hourRemaining=parseInt(document.getElementById("hour").value) || 0
+                
+                if(secondRemaining<0 || secondRemaining>=60 || minuteRemaining<0 || minuteRemaining>=60 || hourRemaining<0){
+                    alert("Tidak boleh ada yang negatif atau semuanya 0. Menit dan detik input maksimal 59")
+                    return
+                }
+                document.getElementById("timer").innerHTML=`<h1>Format Hour:Minute:Second</h1>
+                                                            </br>
+                                                            <h1 id="hour"></h1>
+                                                            <h1>:</h1>
+                                                            <h1 id="minute"></h1>
+                                                            <h1>:</h1>
+                                                            <h1 id="second"></h1>`
+                document.getElementById("runOrSet").innerHTML=`<button onclick="funSetTimer()">Pause</button>
+                                                                <div id="bar"></div>
+                                                                <div id="run"></div>`
+                hourTimer=document.getElementById("hour")
+                minuteTimer=document.getElementById("minute")
+                secondTimer=document.getElementById("second")
+                barProgress=document.getElementById("bar")
+                run=document.getElementById("bar")
+
+                fullBar=(hourRemaining*60*60)+(minuteRemaining*60)+secondRemaining
+                remainingBar=(hourRemaining*60*60)+(minuteRemaining*60)+secondRemaining
+                secondRemaining--
+                if(secondRemaining<0)secondRemaining=0
+                second=setInterval(secondTimers=()=>{
+                    remainingBar=(hourRemaining*60*60)+(minuteRemaining*60)+secondRemaining                    
+                    progress=(remainingBar/fullBar)*100
+                    
+                    // Bar Timer Remaining
+                    outputBar=progress.toFixed(2)+"%"
+                    for(x=0;x<=progress/1.5;x++){
+                        outputBar="-"+outputBar+"-"
+                        barProgress.innerHTML=outputBar
+                    }
+                    // Timer is running
+                    if(remainingBar%2==0)run.innerHTML+="<br>--Timer is running--"
+                    if(remainingBar%2==1)run.innerHTML+=""
+
+                    // Timer
+                    if(secondRemaining<10)secondTimer.innerHTML="0"+secondRemaining
+                    if(minuteRemaining<10)minuteTimer.innerHTML="0"+minuteRemaining
+                    if(secondRemaining>=10)secondTimer.innerHTML=secondRemaining
+                    if(minuteRemaining>=10)minuteTimer.innerHTML=minuteRemaining
+                    hourTimer.innerHTML=hourRemaining
+
+                    if(secondRemaining<=0 && minuteRemaining==0 && hourRemaining==0){alert("Waktu habis");clearInterval(second);funSetTimer()}
+                    if(minuteRemaining<1 && hourRemaining==0){minuteRemaining, hourRemaining=0}
+                    if(minuteRemaining<=0 && hourRemaining!==0 && secondRemaining==0){minuteRemaining=60;hourRemaining--}
+                    if(secondRemaining<=0){secondRemaining=60;minuteRemaining--}
+                    secondRemaining--
+                },1000)
+            }
+            // pause/cancel/stop timer
+            const funSetTimer=()=>{
+                clearInterval(second)
+
+                document.getElementById("timer").innerHTML=`<h1>Format Hour:Minute:Second</h1>
+                                                            </br>
+                                                            <input id="hour" type="number" value="${hourRemaining}">:
+                                                            <input id="minute" type="number" value="${minuteRemaining}">:
+                                                            <input id="second" type="number" value="${secondRemaining}">
+                `
+                document.getElementById("runOrSet").innerHTML=`<button onclick="funRunTimer()">Jalankan Timer</button>`
+            }
+        </script>
+    </body>
+</html>
