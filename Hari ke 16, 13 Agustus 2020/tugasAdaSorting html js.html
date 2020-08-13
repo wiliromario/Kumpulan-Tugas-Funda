@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tugas Aja</title>
+        <style>
+            table{
+                margin: auto;
+            }
+            table,th,td,tr{
+                border: 1px solid black;
+                padding: 10px;
+                border-collapse: collapse;
+            }
+            #displayButtonSorting{
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="displayInput"></div>
+        <div id="displayButtonSorting"></div>
+        <div id="displayListData"></div>
+        &nbsp
+    </body>
+    <script>
+        class Data{
+            constructor(a,b,c,d){
+                this.Nama=a
+                this.Usia=b
+                this.Gender=c
+                this.Pekerjaan=d
+            }
+        }
+        let listData=[
+            new Data("Edi",30,"Pria","Dosen"),
+            new Data("alex",25,"Pria","Marketing"),
+            new Data("Fitri",27,"Wanita","Analysis")
+        ]
+        const displayInput=document.getElementById("displayInput")
+        const displayButtonSorting=document.getElementById("displayButtonSorting")
+        const displayListData=document.getElementById("displayListData")
+        let before=""
+
+        const displayAwal=()=>{
+            displayInput.innerHTML=`<table>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <h1>Input Data</h1>
+                                                    <form id="form">
+                                                        Nama: <input id="inputNama" type="text" placeholder="Nama"> <br><br>
+                                                        Usia: <input id="inputUsia" type="number" placeholder="Usia"> <br><br>
+                                                        Gender:
+                                                            <input type="radio" name="inputGender" value="Pria">Pria 
+                                                            <input type="radio" name="inputGender" value="Wanita">Wanita
+                                                            <br><br>
+                                                        Pekerjaan: <input id="inputPekerjaan" type="text" placeholder="Pekerjaan"> <br><br>
+                                                        <input type="submit" onclick="funClickToSubmit()" value="Submit">
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <br><br>
+            `
+            displayButtonSorting.innerHTML=`<input type="button" onclick="funSortingBy(listData,this.value)" value="Nama">&nbsp;
+                                            <input type="button" onclick="funSortingBy(listData,this.value)" value="Usia">&nbsp;
+                                            <input type="button" onclick="funSortingBy(listData,this.value)" value="Gender">&nbsp;
+                                            <input type="button" onclick="funSortingBy(listData,this.value)" value="Pekerjaan">&nbsp;
+                                            <br><br>
+            `
+            displayListData.innerHTML=`<table>
+                                            <thead>
+                                                <th>No.</th>
+                                                <th>Nama</th>
+                                                <th>Usia</th>
+                                                <th>Kelamin</th>
+                                                <th>Pekerjaan</th>
+                                            </thead>
+                                            <tbody id="displayFilterData">
+                                            </tbody
+                                    </table>
+            `
+        }
+        const funClickToSubmit=()=>{
+            event.preventDefault()
+            inputNama=document.getElementById("inputNama").value
+            inputUsia=document.getElementById("inputUsia").value
+            inputGender=document.querySelector("input[name=inputGender]:checked").value    
+            inputPekerjaan=document.getElementById("inputPekerjaan").value
+            listData.push(new Data(inputNama,inputUsia,inputGender,inputPekerjaan))
+            funSortingBy()
+        }
+        const toBubbleSort=(array,sortingBy)=>{
+            if(sortingBy==before){
+                
+            }
+            before=sortingBy
+        }
+        const bubbleSort=(array,sortingBy)=>{
+            if(sortingBy!==before){
+                before=sortingBy
+                if (sortingBy=="Usia"){
+                    for(let i=array.length-1;i > 0; i--){
+                        for(let j=0;j<i;j++){
+                            if(array[j][sortingBy]>array[j+1][sortingBy]){
+                                const temp=array[j]
+                                array [j]=array[j+1] 
+                                array [j+1]=temp
+                            }
+                        }
+                    } return array
+                }
+                if (sortingBy!=="Usia"){
+                    for(let i=array.length-1;i > 0; i--){
+                        for(let j=0;j<i;j++){
+                            if(array[j][sortingBy].toLowerCase()>array[j+1][sortingBy].toLowerCase()){
+                                const temp=array[j]
+                                array [j]=array[j+1] 
+                                array [j+1]=temp
+                            }
+                        }
+                    } return array
+                }
+            }
+            if(sortingBy==before){
+                before=""
+                if (sortingBy=="Usia"){
+                    for(let i=array.length-1;i > 0; i--){
+                        for(let j=0;j<i;j++){
+                            if(array[j][sortingBy]<array[j+1][sortingBy]){
+                                const temp=array[j]
+                                array [j]=array[j+1] 
+                                array [j+1]=temp
+                            }
+                        }
+                    } return array
+                }
+                if (sortingBy!=="Usia"){
+                    for(let i=array.length-1;i > 0; i--){
+                        for(let j=0;j<i;j++){
+                            if(array[j][sortingBy].toLowerCase()<array[j+1][sortingBy].toLowerCase()){
+                                const temp=array[j]
+                                array [j]=array[j+1] 
+                                array [j+1]=temp
+                            }
+                        }
+                    } return array
+                }
+            }
+            
+        }
+        const funSortingBy=(array=listData,sortingBy="Nama")=>{
+            bubbleSort(array,sortingBy)
+            displayFilterData=""
+            displayFilterData=array.map((val,index)=>{
+                return `<tr>
+                            <td>${index+1}</td>
+                            <td>${val.Nama}</td>
+                            <td>${val.Usia}</td>
+                            <td>${val.Gender}</td>
+                            <td>${val.Pekerjaan}</td>
+                        </tr>
+                `
+            }).join("")
+            document.getElementById("displayFilterData").innerHTML=displayFilterData
+        }
+
+        displayAwal()
+        funSortingBy()
+    </script>
+</html>
