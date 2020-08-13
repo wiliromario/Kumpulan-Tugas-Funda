@@ -66,12 +66,6 @@ const funClickToSubmit=()=>{
     listData.push(new Data(inputNama,inputUsia,inputGender,inputPekerjaan))
     funSortingBy()
 }
-const toBubbleSort=(array,sortingBy)=>{
-    if(sortingBy==before){
-        
-    }
-    before=sortingBy
-}
 const bubbleSort=(array,sortingBy)=>{
     if(sortingBy!==before){
         before=sortingBy
