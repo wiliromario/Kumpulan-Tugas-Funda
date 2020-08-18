@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tertinggi Terendah</title>
+    </head>
+    <body>
+
+    </body>
+    <script>
+        arrAngka=[]
+        condition=false
+        do {
+            angka=parseInt(prompt("Masukkan angka:"))
+            if(Object.is(angka,NaN))condition=false
+            if(!(isNaN(angka))){
+                arrAngka.push(angka)
+                condition=true
+            }
+        } while (condition);
+        nilaiTertinggi=0
+        for(x=0;x<=arrAngka.length-1;x++){
+            if(nilaiTertinggi<arrAngka[x]){
+                nilaiTertinggi=arrAngka[x]
+            }
+        }
+        var nilaiTerendah="Aa"
+        for(x=0;x<=arrAngka.length-1;x++){
+            if(isNaN(nilaiTerendah))nilaiTerendah=arrAngka[x]
+            if(nilaiTerendah>=arrAngka[x+1]){
+                    nilaiTerendah=arrAngka[x+1]
+            }
+            else if(nilaiTerendah<=arrAngka[x+1]){
+                nilaiTerendah=nilaiTerendah
+            }
+        }
+        console.log(arrAngka)
+        console.log("Nilai tertinggi : "+nilaiTertinggi)
+        console.log("Nilai terendah : "+nilaiTerendah)
+    </script>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>VERSION V2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+
+        form {
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <form >
+        <fieldset>
+            <legend>Filter</legend>
+            <p>Nama: <input type="text" id="keyword" oninput="funFilter()"></p>
+            <p>Harga: <input type="number" name="min" id="min" oninput="funFilter()"> - <input type="number" name="max" id="max" oninput="funFilter()"></p>
+            <p>Category: <select name="category" id="categoryFilter" onchange="funFilter()">
+                
+            </select></p>
+        </fieldset>
+        <fieldset>
+            <legend>Input Data</legend>
+            <table>
+                
+                <td><input type="text" name="nama" id="nameInput" placeholder="Nama"></td>
+                <td><input type="number" name="nama" id="priceInput" placeholder="Harga"></td>
+                <td><select name="category" id="categoryInput">
+                    <option value="Smartwatch">Smartwatch</option>
+                    <option value="Smartphone">Smartphone</option>
+                    <option value="Laptop">Laptop</option>
+                </select></td>
+                <td><input type="number" name="nama" id="stockInput" placeholder="Stock"></td>
+                
+            </table>
+            <p><input type="button" value="Input" onclick="funInputData()"></p>
+        </fieldset>
+        <fieldset>
+            <legend>Tabel Data</legend>
+            <table id="myTable">
+                <thead>
+                    <th>No.</th>
+                    <th>Id</th>
+                    <th>Category</th>
+                    <th>Nama</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Buy</th>
+                    <th colspan="2">Action</th>
+                </thead>
+                <tbody id="render">
+                    
+                </tbody>
+            </table>
+        </fieldset>
+
+        <fieldset>
+            <legend>Cart</legend>
+            <table id="myCart">
+                <thead>
+                    <th>No.</th>
+                    <th>Id</th>
+                    <th>Category</th>
+                    <th>Nama</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th colspan="2">Action</th>
+                </thead>
+                <tbody id="renderCart">
+                    
+                </tbody>
+            </table>
+            <br>
+            <button onclick="funPayment()">Payment</button>
+        </fieldset>
+
+        <fieldset>
+            <legend>Payment</legend>
+            <div id="renderPayment">
+
+            </div>
+        </fieldset>
+    </form>
+    <script>
+        class product{
+            constructor(idProduct,name,price,category,stock){
+                this.idProduct=idProduct;this.name=name;this.price=price;this.category=category;this.stock=stock
+            }
+        }
+        class cart{
+            constructor(idProduct,category,name,price,qty){
+                this.idProduct=idProduct;this.category=category;this.name=name;this.price=price;this.qty=qty
+            }
+        }
+        let dataProduct=[
+            new product(1579581080923,"Apple iPhone 11 64GB, Black",12799000,"Smartphone",20),
+            new product(1579581081130,"Apple iPhone 11 Pro 256GB, Midnight Green",20999000,"Smartphone",30),
+            new product(1579581081342,"Samsung Galaxy Watch Active2 (44mm) Aluminium Black", 3699000,"Smartwatch",10),
+            new product(1579581081577,"Asus ROG Strix HERO III (G531GU-I766H1T) - Metal Black",22999000,"Laptop",5)
+        ]
+        let arrCategory=["All","Smartwatch","Smartphone","Laptop"]
+        let render=document.getElementById("render")
+        arrFilter=[],arrCart=[],arrIndexCart=[]
+        var outputPayment=""
+        var keyEditDeleteBeforeAdd=false
+        indexDelete=-1
+        indexEdit=-1
+
+        const funFilter=()=>{
+            let inputName=(document.getElementById("keyword").value).toLowerCase()
+            let inputCategory=document.getElementById("categoryFilter").value
+            if (inputCategory=="All")inputCategory=""
+            let inputPriceMin=document.getElementById("min").value || 0
+            let inputPriceMax=document.getElementById("max").value || maxPrice(dataProduct)
+            
+            arrFilter=dataProduct.filter((val)=>{
+                filterTrue=((val.name).toLowerCase()).includes(inputName) 
+                && val.category.includes(inputCategory) 
+                && (inputPriceMin<=val.price
+                && val.price<=inputPriceMax)
+                return filterTrue
+            })
+            
+            dataRender(arrFilter)
+        }
+        const funInputData=()=>{
+            let nameInput=document.getElementById("nameInput").value
+            funCekDoubleName(nameInput)
+            if (cekName.length)return alert("Nama produk sudah ada")
+            
+            let priceInput=parseInt(document.getElementById("priceInput").value)
+            let categoryInput=document.getElementById("categoryInput").value
+            let stockInput=document.getElementById("stockInput").value
+            if(!(nameInput&&priceInput&&categoryInput&&stockInput)){alert("Semua harus di isi");return} // Semua harus di isi
+            let addId=new Date().getTime()
+            let addDataProduct= new product(addId,nameInput,priceInput,categoryInput,stockInput)
+            dataProduct.push(addDataProduct)
+            arrFilter=[]
+            dataRender()
+        }
+        const maxPrice=(arrToFilter)=>{
+            var array=[]
+            for(x=0;x<=arrToFilter.length-1;x++){
+                array.push(arrToFilter[x].price)
+            }
+            var maxPrice=Math.max(...array)
+            return maxPrice
+        }
+        const renderCategory=()=>{
+            outputCategory=arrCategory.map((val)=>{
+                return (
+                    `<option value="${val}">${val}</option>`
+                )
+            })
+            document.getElementById("categoryFilter").innerHTML=outputCategory  // untuk category Filter, termasuk "All"
+            outputCategory.splice(0,1)                                          // untuk category input, hilangkan "All"
+            document.getElementById("categoryInput").innerHTML=outputCategory
+        }
+        const dataRender=(arr=dataProduct)=>{
+            var outputData=arr.map((val,index)=>{
+                
+                if(index==indexDelete){
+                    return(
+                        `<tr>
+                            <td>${index+1}</td>
+                            <td>${val.idProduct}</td>
+                            <td id="categoryEdit${index}">${val.category}</td>
+                            <td id="nameEdit${index}">${val.name}</td>
+                            <td id="priceEdit${index}">${funBecomeWhatIWantThanks(val.price)}</td>
+                            <td id="stockEdit${index}">${val.stock}</td>
+                            <td><button onclick="funAddToCart(${val.idProduct})">Add</button></td>
+                            <td id="saveOrDelete${index}"><button onclick=funConfirmDelete(${val.idProduct})>Yakin Delete</button></td>
+                            <td id="editOrCancel${index}"><button onclick=funCancel()>Cancel</button></td>
+                        </tr>
+                        `
+                    )
+                }
+                if(index==indexEdit){
+                    funCategoryEdit(val.idProduct)
+                    return(
+                        `<tr>
+                            <td>${index+1}</td>
+                            <td><input type="text" disabled value="${val.idProduct}"></td>
+                            <td><input type="text" disabled value="${val.category}"></td>
+                            <td><input type="text" id="nameEdit" value="${val.name}"></td>
+                            <td><input type="number" id="priceEdit" value="${val.price}"></td>
+                            <td><input type="number" id="stockEdit" value="${val.stock}"></td>
+                            <td><button onclick="funAddToCart(${val.idProduct})">Add</button></td>
+                            <td id="saveOrDelete${index}"><button onclick=funSave()>Save</button></td>
+                            <td id="editOrCancel${index}"><button onclick=funCancel()>Cancel</button></td>
+                        </tr>
+                        `
+                    )
+                }
+                return(
+                    `<tr>
+                        <td>${index+1}</td>
+                        <td>${val.idProduct}</td>
+                        <td id="categoryEdit${index}">${val.category}</td>
+                        <td id="nameEdit${index}">${val.name}</td>
+                        <td id="priceEdit${index}">${funBecomeWhatIWantThanks(val.price)}</td>
+                        <td id="stockEdit${index}">${val.stock}</td>
+                        <td><button onclick="funAddToCart(${val.idProduct})">Add</button></td>
+                        <td id="saveOrDelete${index}"><button onclick="funDelete(${index})" value="${val.name}">Delete</button></td>
+                        <td id="editOrCancel${index}"><button onClick="funEdit(${index})" value="${val.name}">Edit</button></td>
+                    </tr>
+                    `
+                )
+            })
+            render.innerHTML=outputData.join("")
+        }
+        const funFindIndex=(find)=>{
+            indexDataProduct=dataProduct.findIndex((val)=>val.idProduct==find)
+            indexFilter=arrFilter.findIndex((val)=>val.idProduct==find)
+            indexArrCart=arrCart.findIndex((val)=>val.idProduct==find)
+        }
+        const funDelete=(index)=>{
+            event.preventDefault()
+            keyEditDeleteBeforeAdd=true
+            indexDelete=index
+            if(arrFilter.length) return dataRender(arrFilter)
+            dataRender()
+        }
+        const funConfirmDelete=(getidProduct)=>{
+            event.preventDefault()
+            funFindIndex(getidProduct)
+            dataProduct.splice(indexDataProduct,1)
+            arrFilter.splice(indexFilter,1)
+
+            indexDelete=-1
+            if(arrFilter.length) return dataRender(arrFilter)
+            dataRender()
+            keyEditDeleteBeforeAdd=false
+        }
+        const funEdit=(index)=>{
+            event.preventDefault()
+            keyEditDeleteBeforeAdd=true
+            indexEdit=index
+            if(arrFilter.length) return dataRender(arrFilter)
+            dataRender()
+        }
+        const funCategoryEdit=(find)=>{
+            funFindIndex(find)
+            if(arrFilter.length) return funOutputCategoryEdit(arrFilter,indexFilter)
+            funOutputCategoryEdit(dataProduct,indexDataProduct)
+        }
+        const funOutputCategoryEdit=(arr=dataProduct, getIndex)=>{
+            if(arrCategory[0]=="All")arrCategory.splice(0,1)
+            outputCategoryEdit=arrCategory.map((val)=>{
+                if(val==arr[getIndex].category){
+                    return `<option value="${val}" selected>${val}</option>`
+                }
+                return `<option value="${val}">${val}</option>`
+            }).join("")
+        }
+        const funCekDoubleName=(nameInput)=>{
+            cekName=dataProduct.filter((val)=>{
+                cekNameTrue=((val.name).toLowerCase()).includes(nameInput.toLowerCase())
+                return cekNameTrue
+            })
+        }
+        const funSave=()=>{
+            event.preventDefault()
+            nameInput=document.getElementById("nameEdit").value
+            funCekDoubleName(nameInput)
+            if (nameInput == (dataProduct[indexDataProduct].name)) cekName=[]
+            if (cekName.length)return alert("Nama produk sudah ada")
+            
+            dataProduct[indexDataProduct].name=nameInput
+            dataProduct[indexDataProduct].price=document.getElementById("priceEdit").value
+            dataProduct[indexDataProduct].stock=parseInt(document.getElementById("stockEdit").value) || 0
+            if(!(nameInput&&dataProduct[indexDataProduct].price&&dataProduct[indexDataProduct].category)){alert("Semua harus di isi");return}
+            indexEdit=-1
+            keyEditDeleteBeforeAdd=false
+            if(arrFilter.length) return dataRender(arrFilter)
+            dataRender(dataProduct)
+        }
+        const funCancel=()=>{
+            event.preventDefault()
+            indexDelete=-1
+            indexEdit=-1
+            keyEditDeleteBeforeAdd=false
+            if(arrFilter.length)return dataRender(arrFilter)
+            dataRender()
+        }
+        const funAddToCart=(getidProduct)=>{
+            event.preventDefault()
+            if(keyEditDeleteBeforeAdd){alert("Selesaikan edit atau hapus dulu. Kalau batal, pilih cancel. Baru dah bisa add ke keranjang");return}
+            qty=1
+            funFindIndex(getidProduct)
+            
+            if(indexArrCart==-1){
+                arrCart.push(new cart(dataProduct[indexDataProduct].idProduct,dataProduct[indexDataProduct].category,dataProduct[indexDataProduct].name,dataProduct[indexDataProduct].price,qty))
+            }
+            else{
+                if(dataProduct[indexDataProduct].stock<=0){
+                    alert(`Maaf stok kosong`)
+                    return
+                }
+                arrCart[indexArrCart].qty+=qty
+            }
+            dataProduct[indexDataProduct].stock-=1
+            funRenderCart()
+            if(arrFilter.length)return dataRender(arrFilter)
+            dataRender(dataProduct)
+            
+        }
+        const funRenderCart=()=>{
+            document.getElementById("renderCart").innerHTML=arrCart.map((val,index)=>{
+                return(
+                    `<tr>
+                        <td>${index+1}</td>
+                        <td>${val.idProduct}</td>
+                        <td>${val.category}</td>
+                        <td>${val.name}</td>
+                        <td>${funBecomeWhatIWantThanks(val.price)}</td>
+                        <td>${val.qty}</td>
+                        
+                        <td><button onclick=funDelCart(${val.idProduct})>Delete</button></td>
+                    </tr>
+                    `
+                )
+            }).join("")
+            if(outputPayment!=="")document.getElementById("renderPayment").innerHTML=""
+        }
+        const funDelCart=(find)=>{
+            event.preventDefault()
+            funFindIndex(find)
+            dataProduct[indexDataProduct].stock+=arrCart[indexArrCart].qty
+            arrCart.splice(indexArrCart,1)
+            funRenderCart()
+            if(arrFilter.length)return dataRender(arrFilter)
+            dataRender(dataProduct)
+            
+        }
+        const funCalculateTotal=()=>{
+            subTotal=0
+            
+            for(x=0;x<=arrCart.length-1;x++){
+                subTotal+=arrCart[x].price*arrCart[x].qty
+            } 
+            ppn=0.01*subTotal
+            total=subTotal+ppn
+            
+        }
+        const funPayment=()=>{
+            event.preventDefault()
+            if (arrCart.length==0){alert("Keranjang Kosong");return}
+            funCalculateTotal()
+            outputPayment=`<h3>Transaction Detail</h3>`
+            outputPayment+=arrCart.map((val)=>{
+                return(
+                    `<p>${val.idProduct} | ${val.category} | ${val.name} | ${funBecomeWhatIWantThanks(val.price)}/unit | Qty: ${val.qty} = ${funBecomeWhatIWantThanks(val.price*val.qty)} </p>`
+                )
+            }).join("")
+            outputPayment+=`<h3>Sub Total ${funBecomeWhatIWantThanks(subTotal)}<h3>
+                            <h3>PPN ${funBecomeWhatIWantThanks(ppn)}<h3>
+                            <h3>Total ${funBecomeWhatIWantThanks(total)}<h3>
+            `
+            document.getElementById("renderPayment").innerHTML=outputPayment
+            document.getElementById("renderPayment").scrollIntoView()
+
+        }
+        const funBecomeWhatIWantThanks=(price)=>{
+            var numberFormat = Intl.NumberFormat();
+            outputFormatPrice=`Rp ${numberFormat.format(price)}.-`
+            return outputFormatPrice
+        }
+
+        renderCategory()
+        dataRender()
+    </script>
+</body>
+
+</html>

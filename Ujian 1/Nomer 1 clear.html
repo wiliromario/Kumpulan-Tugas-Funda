@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Drawing Tools</title>
+    </head>
+    <body>
+        <h1>Drawing Tools</h1>
+        <ol>
+            <li>Persegi</li>
+            <li>Segitiga Siku2 Rata Kiri</li>
+            <li>Segitiga Siku2 Rata Kanan</li>
+        </ol>
+        <p>Jenis Bangunan:</p>
+        <input type="number" id="jenisBangunan" placeholder="Jenis Bangunan. Dalam Angka">
+        <p>Ukuran:</p>
+        <input type="number" id="ukuranBangunan" placeholder="Ukuran">
+        <br>
+        <button onclick="funLihat()">Lihat</button>
+        <br>
+        <p id="output"></p>
+    </body>
+    <script>
+        const funLihat=()=>{
+            output=""
+            inputJenisBangunan=document.getElementById("jenisBangunan").value
+            if(inputJenisBangunan>3 && inputJenisBangunan<1)alert("Hanya masukkan angka 1-3 yang tertera")
+            inputUkuran=document.getElementById("ukuranBangunan").value
+            if(inputJenisBangunan==1){
+                for (let i=0;i<inputUkuran;i++){
+                    for(let j=0;j<inputUkuran;j++){
+                        output=output+"*"
+                    }
+                    output=output+"<br>"
+                }
+                console.log(output)
+            }
+            if(inputJenisBangunan==2){
+                for(let i=1;i<=inputUkuran;i++){
+                    for(let j=1;j<i+1;j++){
+                        output=output+"*"
+                    }
+                output=output+"<br>"
+                }
+            }
+            if(inputJenisBangunan==3){
+                for(x=1;x<=inputUkuran;x++){
+                    for(z=inputUkuran-1;z>=x;z--){
+                        output+="&nbsp;&nbsp;"
+                    }
+                    for(y=1;y<=x;y++){
+                        output+="*"
+                    }
+                    output+="<br>"
+                }
+            }
+            console.log(output)
+            document.getElementById("output").innerHTML=`<p>${output}</p>`
+        }
+    </script>
+</html>
