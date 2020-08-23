@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Angka Digital</title>
+        <style>
+            div p{
+                display: inline;
+                margin: 0em;
+            }
+            div br{   
+                content: "";
+                margin: 2em;
+                display: block;
+                margin-bottom: -40px; 
+            }
+            div{
+                display: inline;
+                width: fit-content;
+                float: left;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- <center> -->
+            <input type="number" id="inputNumber">
+            <input type="button" onclick="funSubmit()" value="Submit">
+            <br><br>
+            <div id="output" class="digitalNumber">
+                <!-- Angka seperti jam digital nanti muncul di sini -->
+            </div>
+        <!-- </center> -->
+        <script>
+            function funSubmit(){
+                inputNumber=document.getElementById("inputNumber").value
+                digit=inputNumber.length
+                funPlaceForNumber(digit)
+                funDigitalNumber(digit,inputNumber)
+            }
+
+            const funPlaceForNumber=(digit)=>{
+                output=""
+                for(x=1;x<=digit;x++){
+                    output+=`<div id="digit${x}"></div>`
+                }
+                document.getElementById("output").innerHTML=output
+            }
+            function funDigitalNumber(digit,inputNumber){
+                for(x=1;x<=digit;x++){
+                    z=0
+                    while(z!==x){
+                        outputNumber=""
+                        // p1 dan p2
+                        if(inputNumber[z]==1 || inputNumber[z]==4){
+                            outputNumber+=` <!-- Angka ${inputNumber[z]} -->
+                                            <p id="p1">&nbsp;&nbsp;</p>
+                                            <p id="p2">&nbsp;&nbsp;</p><br>`
+                        } else{
+                            outputNumber+=` <!-- Angka ${inputNumber[z]} -->
+                                            <p id="p1">--</p>
+                                            <p id="p2">--</p><br>`
+                        }
+                        // p3
+                        if(inputNumber[z]==7 || inputNumber[z]==3 || inputNumber[z]==2 || inputNumber[z]==1){
+                            outputNumber+=` <p id="p3">&nbsp;</p>`
+                        } else{
+                            outputNumber+=` <p id="p3">|</p>`
+                        }
+                        // p4
+                        outputNumber+=` <p id="p4">&nbsp;&nbsp;</p>`
+                        // p5
+                        if(inputNumber[z]==6 || inputNumber[z]==5){
+                            outputNumber+=` <p id="p5">&nbsp;</p><br>`
+                        } else{
+                            outputNumber+=` <p id="p5">&nbsp;|</p><br>`
+                        }
+                        // p6 dan p7
+                        if(inputNumber[z]==0 || inputNumber[z]==7 || inputNumber[z]==1){
+                            outputNumber+=` <p id="p6">&nbsp;&nbsp;</p>
+                                            <p id="p7">&nbsp;&nbsp;</p><br>`
+                        } else{
+                            outputNumber+=` <p id="p6">--</p>
+                                            <p id="p7">--</p><br>`
+                        }
+                        // p8
+                        if(inputNumber[z]==9 || inputNumber[z]==7 || inputNumber[z]==5 || inputNumber[z]==4 || inputNumber[z]==3 || inputNumber[z]==1){
+                            outputNumber+=` <p id="p8">&nbsp;</p>`
+                        } else{
+                            outputNumber+=` <p id="p8">|</p>`
+                        }
+                        // p9
+                        outputNumber+=` <p id="p9">&nbsp;&nbsp;</p>`
+                        // p10
+                        if(inputNumber[z]==2){
+                            outputNumber+=` <p id="p10">&nbsp;</p><br>`
+                        } else{
+                            outputNumber+=` <p id="p10">&nbsp;|</p><br>`
+                        }
+                        // p11 dan p12
+                        if(inputNumber[z]==7 || inputNumber[z]==4 || inputNumber[z]==1){
+                            outputNumber+=` <p id="p11">&nbsp;&nbsp;</p>
+                                            <p id="p12">&nbsp;&nbsp;</p><br>`
+                        } else{
+                            outputNumber+=` <p id="p11">--</p>
+                                            <p id="p12">--</p><br>`
+                        }
+                        z++
+                    }
+                    document.getElementById(`digit${x}`).innerHTML=outputNumber
+                    
+                    
+                    
+                }
+            }
+        </script>
+    </body>
+</html>
